@@ -15,14 +15,14 @@
                         </header>
                         <div class="card__image">
                             <img src="<%= product.imageUrl %>"
-                                alt="<%= product.title %>">
+                                alt="<%= product.title %>" width="100" height="200">
                         </div>
                         <div class="card__content">
                             <h2 class="product__price">$<%= product.price %></h2>
                             <p class="product__description"><%= product.description %></p>
                         </div>
                         <div class="card__actions">
-                            <button class="btn">Add to Cart</button>
+                        <%- include('../includes/add-tocart.ejs',{product:product}) %>
                         </div>
                     </article>
                 <% } %>
