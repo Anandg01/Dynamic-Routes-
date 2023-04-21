@@ -1,5 +1,6 @@
 const fs= require('fs');
 const path= require('path');
+const { isNull } = require('util');
 
 const p = path.join(
     path.dirname(process.mainModule.filename),
@@ -29,10 +30,43 @@ if(existingProduct){
 
 else{
     updatedProduct={id: id, qty:1};
-    cart.products={...cart.products, updatedProduct}
+    cart.products=[...cart.products, updatedProduct]
 }
 cart.totalPrice=cart.totalPrice+ +productPrice
 fs.writeFile(p,JSON.stringify(cart), (err)=>console.log(err))
+console.log(cart)
 })
     }
+
+static deleteProduct(id, productPrice){
+    fs.readFile(p, (err, data)=>{
+        if(err){
+            return
+        }
+        const updateCart={...JSON.parse(data)};
+        const product=updateCart.products.find(prob=>prob.id===id)
+        if(!product){
+            return;
+        }
+        console.log(product)
+        const productqty=product.qty
+         updateCart.products=updateCart.products.filter(
+            prob=>prob.id!==id
+        );
+        updateCart.totalPrice=updateCart.totalPrice-productPrice*productqty
+      fs.writeFile(p,JSON.stringify(updateCart),err=>console.log(err))
+    })
+}
+
+static getCart(cb){
+    fs.readFile(p, (err, data)=>{
+        if(err){
+            cb({products: [], totalPrice: 0})
+        }
+        else{
+            cb(JSON.parse(data))
+        }
+    })
+}
+
 }
