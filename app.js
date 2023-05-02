@@ -8,8 +8,10 @@ const errorController = require('./controllers/error');
 const sequelize=require('./util/database')
 const Product=require('./models/product');
 const User=require('./models/user');
-
-
+const Cart=require('./models/cart')
+const CartItem=require('./models/cart-item')
+const Order=require('./models/order');
+const OrderItem=require('./models/order-item')
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const user = require('./models/user');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,8 +43,15 @@ app.use(errorController.get404);
 
 Product.belongsTo(User,{consraints:true, onDelete:'CASCADE'})
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product,{through:CartItem})
+Product.belongsToMany(Cart,{through:CartItem})
 
-sequelize.sync()
+
+sequelize
+//.sync({force:true})
+.sync()
 .then(result=>{
  //  console.log(result)
  return  User.findByPk(1)
@@ -53,8 +63,11 @@ sequelize.sync()
   return user
 })
 .then(user=>{
+  user.createCart();
+})
+.then(cart=>{
  // console.log(user)
-  app.listen(3000,()=>console.log("server Running..."));
+  app.listen(2000,()=>console.log("server Running..."));
 })
 .catch(err=>console.log('Error occured...'))
 //app.listen(3000,()=>console.log("server running..."));
